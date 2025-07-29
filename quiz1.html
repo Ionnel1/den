@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 8 – Types of Teeth Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style for draggable items */
+        .draggable {
+            cursor: move;
+            transition: transform 0.2s ease-in-out;
+        }
+        .dragging {
+            opacity: 0.5;
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        /* Style for drop zones */
+        .drop-zone {
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+            min-height: 50px;
+        }
+        .drag-over {
+            background-color: #e0f2f1; /* A light teal color */
+            border-color: #26a69a; /* A darker teal */
+        }
+        .correct-drop {
+            border-color: #4caf50 !important; /* Green */
+            background-color: #e8f5e9;
+        }
+        .incorrect-drop {
+             border-color: #f44336 !important; /* Red */
+             background-color: #ffebee;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Unit 8 – Types of Teeth</h1>
+        </header>
+
+        <!-- Reading Passage Section -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <details>
+                <summary class="text-2xl font-bold cursor-pointer hover:text-teal-700">Reading Passage (Click to Expand)</summary>
+                <div class="prose max-w-none mt-4 space-y-4">
+                    <p>Have you ever stopped to think about what’s going on inside your mouth? Your teeth are much more than just tools for smiling. Each tooth has a specific job, and they all work together to help you eat, speak, and maintain your facial structure. Humans have four different types of teeth, and understanding their roles can help you take better care of them.</p>
+                    <p>First up are the <strong>incisors</strong>. You have eight of them in total—four on the top and four on the bottom, right at the front of your mouth. Their name comes from the Latin word 'incidere', which means 'to cut'. True to their name, incisors are sharp and are used for biting into and cutting your food. When you bite into an apple, you can thank your incisors for making the first move.</p>
+                    <p>Next to the incisors are the <strong>canines</strong>. These are the four sharp, pointed teeth that some people jokingly call 'vampire teeth'. Their primary role is to grip and tear food, especially tougher items like meat. While our canines aren't as long or sharp as those of a lion, they are still crucial for tearing food apart. If you ever feel like you have to <strong>get your teeth into</strong> a tough piece of steak, your canines are the ones doing the heavy lifting.</p>
+                    <p>Behind the canines, you'll find the <strong>premolars</strong>. Adults have eight premolars, four on the top and four on the bottom. These teeth have a flatter surface with ridges, making them perfect for crushing and grinding food into smaller, more manageable pieces. They act as a bridge between the tearing canines and the grinding molars. People often <strong>turn a blind eye</strong> to the importance of premolars, but without them, chewing would be a much tougher job.</p>
+                    <p>Finally, at the very back of your mouth, are the <strong>molars</strong>. These are your largest and strongest teeth. A typical adult has twelve molars, including four wisdom teeth, which often don't <strong>show up</strong> until the late teens or early twenties. Molars have a large, flat biting surface that is ideal for the final stage of chewing: grinding food down until it's ready to be swallowed. It's a tough job, but someone's got to do it, and molars are <strong>long in the tooth</strong> when it comes to experience. When a dentist tells you a molar needs to be removed, it can feel like you’re <strong>between a rock and a hard place</strong>, as they are so important for chewing. It's essential to <strong>keep an eye on</strong> your molars to prevent decay. You really have to <strong>face the music</strong> and brush them properly, even if they are hard to reach.</p>
+                </div>
+            </details>
+        </div>
+
+        <!-- Activity 1: Vocabulary Matching -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-2xl font-bold mb-4">Activity 1: Vocabulary Matching</h2>
+            <p class="mb-6 text-gray-600">Drag the meaning on the right to match the idiom on the left.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Column 1: Idioms (Drop Zones) -->
+                <div id="idioms-list" class="space-y-4"></div>
+                <!-- Column 2: Meanings (Draggable Items) -->
+                <div id="meanings-list" class="space-y-4 bg-gray-50 p-4 rounded-lg"></div>
+            </div>
+            <div class="mt-8 flex space-x-4">
+                <button id="check-matching-btn" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg">Check Answers</button>
+                <button id="reset-matching-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">Reset</button>
+                <p id="matching-score" class="text-lg font-semibold self-center"></p>
+            </div>
+        </div>
+
+        <!-- Activity 2: True or False -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold mb-4">Activity 2: True or False</h2>
+            <p class="mb-6 text-gray-600">Read the statements and select True or False.</p>
+            <div id="true-false-list" class="space-y-6"></div>
+            <p id="tf-score" class="mt-6 text-lg font-semibold"></p>
+        </div>
+    </div>
+
+    <script>
+    // Self-invoking function to encapsulate all script logic
+    (function() {
+        // --- DATA ---
+        const matchingData = [
+            { id: 1, idiom: 'get your teeth into', meaning: 'to become seriously involved in something' },
+            { id: 2, idiom: 'turn a blind eye', meaning: 'to ignore something that you know is wrong' },
+            { id: 3, idiom: 'show up', meaning: 'to appear or arrive' },
+            { id: 4, idiom: 'long in the tooth', meaning: 'a bit too old for something' },
+            { id: 5, idiom: 'between a rock and a hard place', meaning: 'in a difficult situation where both choices are bad' },
+            { id: 6, idiom: 'keep an eye on', meaning: 'to watch or take care of something' },
+            { id: 7, idiom: 'face the music', meaning: 'to accept the consequences of your actions' }
+        ];
+
+        const trueFalseData = [
+            { statement: 'Humans have five different types of teeth.', answer: false },
+            { statement: 'Incisors are primarily used for grinding food.', answer: false },
+            { statement: 'Canines are located at the very back of the mouth.', answer: false },
+            { statement: 'Premolars have a sharp, pointed surface for tearing.', answer: false },
+            { statement: 'Molars are the largest and strongest teeth in the mouth.', answer: true },
+            { statement: 'Wisdom teeth are a type of incisor.', answer: false },
+            { statement: 'The main function of molars is to grind food down before swallowing.', answer: true }
+        ];
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initMatchingActivity();
+            initTrueFalseActivity();
+        });
+
+        // --- ACTIVITY 1: VOCABULARY MATCHING ---
+        function initMatchingActivity() {
+            const idiomsList = document.getElementById('idioms-list');
+            const meaningsList = document.getElementById('meanings-list');
+            
+            // Shuffle meanings for randomness
+            const shuffledMeanings = [...matchingData].sort(() => Math.random() - 0.5);
+
+            matchingData.forEach(item => {
+                idiomsList.innerHTML += `
+                    <div class="flex items-center space-x-3">
+                        <span class="font-semibold w-1/2">${item.idiom}</span>
+                        <div id="drop-${item.id}" data-answer-id="${item.id}" class="drop-zone w-1/2 p-3 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-500">Drop here</div>
+                    </div>
+                `;
+            });
+
+            shuffledMeanings.forEach(item => {
+                meaningsList.innerHTML += `
+                    <div id="drag-${item.id}" data-meaning-id="${item.id}" class="draggable p-3 bg-white border border-gray-300 rounded-lg shadow-sm">${item.meaning}</div>
+                `;
+            });
+
+            addDragAndDropListeners();
+            document.getElementById('check-matching-btn').addEventListener('click', checkMatchingAnswers);
+            document.getElementById('reset-matching-btn').addEventListener('click', initMatchingActivity);
+        }
+
+        function addDragAndDropListeners() {
+            const draggables = document.querySelectorAll('.draggable');
+            const dropZones = document.querySelectorAll('.drop-zone');
+            let draggedItem = null;
+
+            draggables.forEach(draggable => {
+                draggable.setAttribute('draggable', true);
+                draggable.addEventListener('dragstart', (e) => {
+                    draggedItem = e.target;
+                    setTimeout(() => e.target.classList.add('dragging'), 0);
+                });
+                draggable.addEventListener('dragend', (e) => {
+                    e.target.classList.remove('dragging');
+                    draggedItem = null;
+                });
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                zone.addEventListener('dragleave', (e) => {
+                    zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    if (draggedItem && zone.children.length === 0) {
+                        zone.textContent = '';
+                        zone.appendChild(draggedItem);
+                    }
+                });
+            });
+        }
+
+        function checkMatchingAnswers() {
+            let score = 0;
+            matchingData.forEach(item => {
+                const dropZone = document.getElementById(`drop-${item.id}`);
+                dropZone.classList.remove('correct-drop', 'incorrect-drop');
+                const droppedItem = dropZone.querySelector('.draggable');
+                if (droppedItem) {
+                    const droppedId = droppedItem.getAttribute('data-meaning-id');
+                    const correctId = dropZone.getAttribute('data-answer-id');
+                    if (droppedId === correctId) {
+                        score++;
+                        dropZone.classList.add('correct-drop');
+                    } else {
+                        dropZone.classList.add('incorrect-drop');
+                    }
+                } else {
+                    dropZone.classList.add('incorrect-drop');
+                }
+            });
+            document.getElementById('matching-score').textContent = `Score: ${score} / ${matchingData.length}`;
+        }
+        
+        // --- ACTIVITY 2: TRUE OR FALSE ---
+        function initTrueFalseActivity() {
+            const tfList = document.getElementById('true-false-list');
+            tfList.innerHTML = '';
+            let correctCount = 0;
+            
+            trueFalseData.forEach((item, index) => {
+                tfList.innerHTML += `
+                    <div class="p-4 border border-gray-200 rounded-lg">
+                        <p class="mb-3">${index + 1}. ${item.statement}</p>
+                        <div class="flex space-x-3" id="tf-group-${index}">
+                            <button data-answer="true" class="tf-btn flex-1 bg-gray-200 hover:bg-gray-300 font-semibold py-2 px-4 rounded-lg">True</button>
+                            <button data-answer="false" class="tf-btn flex-1 bg-gray-200 hover:bg-gray-300 font-semibold py-2 px-4 rounded-lg">False</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('tf-score').textContent = '';
+
+            tfList.addEventListener('click', (e) => {
+                if (e.target.classList.contains('tf-btn')) {
+                    const group = e.target.parentElement;
+                    const questionIndex = parseInt(group.id.split('-')[2]);
+                    const selectedAnswer = e.target.getAttribute('data-answer') === 'true';
+                    const correctAnswer = trueFalseData[questionIndex].answer;
+
+                    // Disable buttons after selection
+                    Array.from(group.children).forEach(button => button.disabled = true);
+
+                    if (selectedAnswer === correctAnswer) {
+                        e.target.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+                        e.target.classList.add('bg-green-500', 'text-white');
+                        correctCount++;
+                    } else {
+                        e.target.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+                        e.target.classList.add('bg-red-500', 'text-white');
+                        // Highlight the correct one
+                        const correctBtn = group.querySelector(`[data-answer="${correctAnswer}"]`);
+                        correctBtn.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+                        correctBtn.classList.add('bg-green-500', 'text-white');
+                    }
+                    
+                    document.getElementById('tf-score').textContent = `Score: ${correctCount} / ${trueFalseData.length}`;
+                }
+            });
+        }
+
+    })();
+    </script>
+
+</body>
+</html>
